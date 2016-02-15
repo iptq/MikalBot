@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<% include ../partials/head %>
+		<title><%= leaderboard["name"] %> Leaderboard - MikalBot</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" integrity="sha384-s08NNYG/Em4Lx16SEICBFXiHg6V8fTzhXqCaWFRAFSPz+jU2iL7/wQzNU/ZX42nA" crossorigin="anonymous">
+		<script type="text/javascript" src="/js/d3.v3.min.js"></script>
+		<script type="text/javascript" src="/js/c3.min.js"></script>
+	</head>
+	<body>
+		<header>
+			<% include ../partials/navbar %>
+		</header>
+		<div class="container">
+			<div class="page-header">
+				<h1><%= leaderboard["name"] %></h1>
+			</div>
+			<% var people = [ ], xp = [ "Experience" ]; %>
+			<div id="chart"></div>
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr>
+						<th>Place</th>
+						<th>Name</th>
+						<th>Level</th>
+						<th>XP</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% for(var i=0; i<leaderboard["users"].length; i++) { %>
+						<tr>
+							<td><%= i + 1 %></td>
+							<td>
+								<% if (images == "yes") { %>
+									<img src="<%= leaderboard["users"][i]["picture"] %>" style="border-radius:1000%; vertical-align:middle; width:30px; height:30px; box-shadow:0px 2px 4px rgba(0,0,0,0.5);">
+									&nbsp;
+								<% } %>
+								<%= leaderboard["users"][i]["name"] %>
+							</td>
+							<td>
+								<%= leaderboard["users"][i]["level"] %>
+								<div style="width:100px;height:5px;vertical-align:middle;background-color:#333;display:block;padding:0;">
+									<div style="width:<%= leaderboard["users"][i]["percent"] %>px;height:5px;background-color:#0C0;display:block;"></div>
+								</div>
+							</td>
+							<td><%= leaderboard["users"][i]["xp"] %></td>
+							<% people.push(leaderboard["users"][i]["firstName"]);
+							xp.push(leaderboard["users"][i]["xp"]); %>
+						</tr>
+					<% } %>
+				</tbody>
+			</table>
+			<p style="text-align:right;">
+				<a href="/about#rules">How does this work?</a>
+			</p>
+		</div>
+		<footer>
+			<% include ../partials/footer %>
+		</footer>
+		<script type="text/javascript">
+			var people = <%- JSON.stringify(people); %>
+			var xp = <%- JSON.stringify(xp); %>;
+			var chart = c3.generate({
+				bindto: "#chart",
+				data: {
+					columns: [ xp ],
+					type: "bar"
+				},
+				bar: {
+					width: {
+						ratio: 0.5
+					}
+				},
+				axis: {
+					x: {
+						label: "Rank",
+						type: "category",
+						categories: people
+					},
+					y: {
+						label: "XP"
+					}
+				}
+			});
+		</script>
+	</body>
+</html>
