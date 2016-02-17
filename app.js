@@ -179,6 +179,10 @@ var getLeaderboard = function(thread) {
 	return result;
 };
 
+
+app.listen(8080, function() {
+	console.log("Listening...");
+	
 login({
 	email: process.env.FACEBOOK_EMAIL,
 	password: process.env.FACEBOOK_PASSWORD,
@@ -408,5 +412,4 @@ login({
 		}
 	});
 });
-
-app.listen(8080);
+});
