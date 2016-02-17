@@ -14,6 +14,7 @@
     "jsonfile": "^2.2.3",
     "lowdb": "^0.12.2",
     "method-override": "^2.3.5",
+    "moment": "^2.11.2",
     "morgan": "^1.6.1",
     "passport-facebook": "^2.1.0",
     "request": "^2.69.0",
