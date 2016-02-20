@@ -306,18 +306,21 @@ login({
 					}
 				}
 				
+				// Hardcoded Stuff
 				var hour = ~~(new Date()).getUTCHours();
-				if (sender.id == "100003896281163" && thread.id == "512907945552033" && hour >= 8 && hour < 12) {
-					api.sendMessage("GO TO SLEEP MICHELLE", "512907945552033");
+				if (sender.id == "100003896281163" && thread.id == "1475239659451137" && hour >= 8 && hour < 12) {
+					api.sendMessage("GO TO SLEEP MICHELLE", "1475239659451137");
 				}
 				
-				if (thread.id == "512907945552033" && message.toLowerCase().indexOf("team") >= 0) {
+				if (thread.id == "1475239659451137" && message.toLowerCase().indexOf("team") >= 0) {
 					api.sendMessage("team?", thread.id);
 				}
 				
-				if (sender.id == "100000466030348" && thread.id == "512907945552033") {
+				/*
+				if (sender.id == "100000466030348" && thread.id == "1475239659451137") {
 					activity[thread.id][sender.id]["activity"] = 0;
 				}
+				*/
 				if (sender.id == "100000919104182" && thread.id == "521751258001669") {
 					activity[thread.id][sender.id]["activity"] = 0;
 				}
@@ -325,10 +328,21 @@ login({
 				if (message.startsWith("!")) {
 					switch(message.substring(1).split(" ")[0].toLowerCase()) {
 						case "level":
-							var xp = Math.round(100*activity[thread.id][sender.id]["experience"])/100;
+							var uid = sender.id;
+							var name = sender.name;
+							try {
+								var args = message.split("!level ")[1].split(" ");
+								if (args.length > 0 && args[0].length > 0) {
+									name = args[0];
+									uid = getUserDataByName(name)["uid"];
+									if (!uid) uid = getUserDataByFirstName(name)["uid"];
+								}
+							} catch (e) {
+							}
+							var xp = Math.round(100*activity[thread.id][uid]["experience"])/100;
 							var level = getLevel(xp);
 							var percent = Math.round(getPercentToNextLevel(xp) * 10000) / 100;
-							api.sendMessage("@" + sender.name + ": You are level " + level + " (" + xp + "xp, " + percent + "%)!", thread.id);
+							api.sendMessage("@" + name + ": You are level " + level + " (" + xp + "xp, " + percent + "%)!", thread.id);
 							break;
 						case "leaderboard":
 						case "stats":
