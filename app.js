@@ -330,19 +330,26 @@ login({
 						case "level":
 							var uid = sender.id;
 							var name = sender.name;
+							var you = false;
 							try {
-								var args = message.split("!level ")[1].split(" ");
+								var args = message.split("!level ")[1];
 								if (args.length > 0 && args[0].length > 0) {
 									name = args[0];
 									uid = getUserDataByName(name)["uid"];
 									if (!uid) uid = getUserDataByFirstName(name)["uid"];
+									if (!uid) {
+										uid = sender.id;
+										name = sender.name;
+									} else {
+										you = true;
+									}
 								}
 							} catch (e) {
 							}
 							var xp = Math.round(100*activity[thread.id][uid]["experience"])/100;
 							var level = getLevel(xp);
 							var percent = Math.round(getPercentToNextLevel(xp) * 10000) / 100;
-							api.sendMessage("@" + name + ": You are level " + level + " (" + xp + "xp, " + percent + "%)!", thread.id);
+							api.sendMessage("@" + name + (you ? ": You are" : " is") + " level " + level + " (" + xp + "xp, " + percent + "%)!", thread.id);
 							break;
 						case "leaderboard":
 						case "stats":
