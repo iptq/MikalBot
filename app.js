@@ -332,9 +332,9 @@ login({
 							var name = sender.name;
 							var you = false;
 							try {
-								var args = message.split("!level ")[1];
-								if (args.length > 0 && args[0].length > 0) {
-									name = args[0];
+								var arg = message.split("!level ")[1];
+								if (arg.length > 0) {
+									name = arg;
 									uid = getUserDataByName(name)["uid"];
 									if (!uid) uid = getUserDataByFirstName(name)["uid"];
 									if (!uid) {
