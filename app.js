@@ -335,16 +335,12 @@ login({
 								var arg = message.split("!level ")[1];
 								if (arg.length > 0) {
 									name = arg;
-									uid = getUserDataByName(name)["uid"];
-									if (!uid) uid = getUserDataByFirstName(name)["uid"];
-									if (!uid) {
-										uid = sender.id;
-										name = sender.name;
-									} else {
-										you = true;
-									}
+									uid = getUserDataByName(name)["id"];
+									if (!uid) uid = getUserDataByFirstName(name)["id"];
 								}
 							} catch (e) {
+								uid = sender.id;
+								name = sender.name;
 							}
 							var xp = Math.round(100*activity[thread.id][uid]["experience"])/100;
 							var level = getLevel(xp);
