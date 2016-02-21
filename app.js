@@ -337,7 +337,10 @@ login({
 									name = arg;
 									var user = getUserDataByName(name);
 									if (!user) user = getUserDataByFirstName(name);
-									if (user) uid = user["id"];
+									if (user) {
+										uid = user["id"];
+										name = user["name"];
+									}
 								}
 							} catch (e) {
 								uid = sender.id;
@@ -346,7 +349,7 @@ login({
 							var xp = Math.round(100*activity[thread.id][uid]["experience"])/100;
 							var level = getLevel(xp);
 							var percent = Math.round(getPercentToNextLevel(xp) * 10000) / 100;
-							api.sendMessage("@" + name + (you ? ": You are" : " is") + " level " + level + " (" + xp + "xp, " + percent + "%)!", thread.id);
+							api.sendMessage(name + (you ? ": You are" : " is") + " level " + level + " (" + xp + "xp, " + percent + "%)!", thread.id);
 							break;
 						case "leaderboard":
 						case "stats":
