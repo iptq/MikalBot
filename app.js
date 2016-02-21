@@ -335,8 +335,9 @@ login({
 								var arg = message.split("!level ")[1];
 								if (arg.length > 0) {
 									name = arg;
-									uid = getUserDataByName(name)["id"];
-									if (!uid) uid = getUserDataByFirstName(name)["id"];
+									var user = getUserDataByName(name);
+									if (!user) user = getUserDataByFirstName(name);
+									if (user) uid = user["id"];
 								}
 							} catch (e) {
 								uid = sender.id;
