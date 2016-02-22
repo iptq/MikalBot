@@ -306,6 +306,18 @@ login({
 					}
 				}
 				
+				var predicate = { "to": sender.id };
+				var messages = db("messages").filter(predicate);
+				if (messages.length > 0) {
+					var response = "Hey " + sender.name + ", " + (messages.length == 1 ? "this": "these") + " message" + (messages.length == 1 ? " was": "s were") + " left for you when you were offline:";
+					for(var i=0; i<messages.length; i++) {
+						var m = messages[i];
+						response += "\n- " + (moment(m["timestamp"], "X").fromNow()) + ", " + m["from_name"] + " said:" + m["message"];
+					}
+					api.sendMessage(response, thread.id);
+					db("messages").remove(predicate);
+				}
+				
 				// Hardcoded Stuff
 				var hour = ~~(new Date()).getUTCHours();
 				if (sender.id == "100003896281163" && thread.id == "1475239659451137" && hour >= 8 && hour < 12) {
@@ -380,6 +392,21 @@ login({
 							}
 							var num = ~~(Math.random() * max);
 							api.sendMessage("@" + sender.name + ": You rolled " + num, thread.id);
+							break;
+						case "tell":
+							try {
+								var rec = message.split("!tell ")[1].split(":")[0];
+								console.log(rec);
+								var msg = message.split(message.split(":")[0] + ":")[1];
+								var user = getUserDataByName(rec);
+								if (!user) user = getUserDataByFirstName(rec);
+								var gender = user["gender"];
+								db("messages").push({ "from": sender.id, "from_name": sender.name, "to": user["id"], "to_name": user["name"], message: msg, timestamp: ~~(moment().format("X")) });
+								api.sendMessage(sender.name + ": I'll tell " + (gender == 1 ? "her" : "him") + " when " + (gender == 1 ? "she" : "he") + " comes back online.", thread.id);
+							} catch (e) {
+								console.log(e);
+								api.sendMessage("Usage: !tell <user>:<msg>", thread.id);
+							}
 							break;
 						case "roulette":
 							var rounds = 6;
