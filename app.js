@@ -306,7 +306,7 @@ login({
 					}
 				}
 				
-				var predicate = { "to": sender.id };
+				var predicate = { "to": sender.id, "thread": thread.id };
 				var messages = db("messages").filter(predicate);
 				if (messages.length > 0) {
 					var response = "Hey " + sender.name + ", " + (messages.length == 1 ? "this": "these") + " message" + (messages.length == 1 ? " was": "s were") + " left for you when you were offline:";
@@ -401,7 +401,7 @@ login({
 								var user = getUserDataByName(rec);
 								if (!user) user = getUserDataByFirstName(rec);
 								var gender = user["gender"];
-								db("messages").push({ "from": sender.id, "from_name": sender.name, "to": user["id"], "to_name": user["name"], message: msg, timestamp: ~~(moment().format("X")) });
+								db("messages").push({ "from": sender.id, "from_name": sender.name, "to": user["id"], "to_name": user["name"], message: msg, timestamp: ~~(moment().format("X")), thread: thread.id });
 								api.sendMessage(sender.name + ": I'll tell " + (gender == 1 ? "her" : "him") + " when " + (gender == 1 ? "she" : "he") + " comes back online.", thread.id);
 							} catch (e) {
 								console.log(e);
