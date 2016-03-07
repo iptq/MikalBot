@@ -517,12 +517,14 @@ login({
 														});
 													} else {
 														var role_index = ~~(Math.random() * locations[location_index]["roles"].length);
+														var plocation = locations[location_index]["name"].split(".").last();
+														var prole = locations[location_index]["roles"][role_index].split(".").last();
 														new_players[players[i]] = {
 															spy: false,
-															location: locations[location_index]["name"].split(".").last(),
-															role: locations[location_index]["roles"][role_index].split(".").last()
+															location: plocation,
+															role: prole
 														};
-														api.sendMessage("You aren't the spy!\nRole: ", players[i], function() {
+														api.sendMessage("You aren't the spy!\nLocation: " + plocation + ", Role: " + prole, players[i], function() {
 															next(i + 1);
 														});
 													}
