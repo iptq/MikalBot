@@ -13,7 +13,7 @@ var webshot = require("webshot");
 var db = low("database.json", { storage: storage });
 
 var app = express();
-var domain = "http://mikalbot-failedxyz.c9users.io";
+var domain = "http://bot.michaelz.xyz";
 
 var token = function(length) {
 	var length = length || 25;
@@ -180,7 +180,7 @@ var getLeaderboard = function(thread) {
 };
 
 
-app.listen(8080, function() {
+app.listen(3000, "0.0.0.0", function() {
 	console.log("Listening...");
 	
 login({
@@ -306,18 +306,33 @@ login({
 					}
 				}
 				
-				var hour = ~~(new Date()).getUTCHours();
-				if (sender.id == "100003896281163" && thread.id == "512907945552033" && hour >= 8 && hour < 12) {
-					api.sendMessage("GO TO SLEEP MICHELLE", "512907945552033");
+				var predicate = { "to": sender.id, "thread": thread.id };
+				var messages = db("messages").filter(predicate);
+				if (messages.length > 0) {
+					var response = "Hey " + sender.name + ", " + (messages.length == 1 ? "this": "these") + " message" + (messages.length == 1 ? " was": "s were") + " left for you when you were offline:";
+					for(var i=0; i<messages.length; i++) {
+						var m = messages[i];
+						response += "\n- " + (moment(m["timestamp"], "X").fromNow()) + ", " + m["from_name"] + " said:" + m["message"];
+					}
+					api.sendMessage(response, thread.id);
+					db("messages").remove(predicate);
 				}
 				
-				if (thread.id == "512907945552033" && message.toLowerCase().indexOf("team") >= 0) {
+				// Hardcoded Stuff
+				var hour = ~~(new Date()).getUTCHours();
+				if (sender.id == "100003896281163" && thread.id == "1475239659451137" && hour >= 8 && hour < 12) {
+					api.sendMessage("GO TO SLEEP MICHELLE", "1475239659451137");
+				}
+				
+				if (thread.id == "1475239659451137" && message.toLowerCase().indexOf("team") >= 0) {
 					api.sendMessage("team?", thread.id);
 				}
 				
-				if (sender.id == "100000466030348" && thread.id == "512907945552033") {
+				/*
+				if (sender.id == "100000466030348" && thread.id == "1475239659451137") {
 					activity[thread.id][sender.id]["activity"] = 0;
 				}
+				*/
 				if (sender.id == "100000919104182" && thread.id == "521751258001669") {
 					activity[thread.id][sender.id]["activity"] = 0;
 				}
@@ -325,10 +340,28 @@ login({
 				if (message.startsWith("!")) {
 					switch(message.substring(1).split(" ")[0].toLowerCase()) {
 						case "level":
-							var xp = Math.round(100*activity[thread.id][sender.id]["experience"])/100;
+							var uid = sender.id;
+							var name = sender.name;
+							var you = false;
+							try {
+								var arg = message.split("!level ")[1];
+								if (arg.length > 0) {
+									name = arg;
+									var user = getUserDataByName(name);
+									if (!user) user = getUserDataByFirstName(name);
+									if (user) {
+										uid = user["id"];
+										name = user["name"];
+									}
+								}
+							} catch (e) {
+								uid = sender.id;
+								name = sender.name;
+							}
+							var xp = Math.round(100*activity[thread.id][uid]["experience"])/100;
 							var level = getLevel(xp);
 							var percent = Math.round(getPercentToNextLevel(xp) * 10000) / 100;
-							api.sendMessage("@" + sender.name + ": You are level " + level + " (" + xp + "xp, " + percent + "%)!", thread.id);
+							api.sendMessage(name + (you ? ": You are" : " is") + " level " + level + " (" + xp + "xp, " + percent + "%)!", thread.id);
 							break;
 						case "leaderboard":
 						case "stats":
@@ -359,6 +392,21 @@ login({
 							}
 							var num = ~~(Math.random() * max);
 							api.sendMessage("@" + sender.name + ": You rolled " + num, thread.id);
+							break;
+						case "tell":
+							try {
+								var rec = message.split("!tell ")[1].split(":")[0];
+								console.log(rec);
+								var msg = message.split(message.split(":")[0] + ":")[1];
+								var user = getUserDataByName(rec);
+								if (!user) user = getUserDataByFirstName(rec);
+								var gender = user["gender"];
+								db("messages").push({ "from": sender.id, "from_name": sender.name, "to": user["id"], "to_name": user["name"], message: msg, timestamp: ~~(moment().format("X")), thread: thread.id });
+								api.sendMessage(sender.name + ": I'll tell " + (gender == 1 ? "her" : "him") + " when " + (gender == 1 ? "she" : "he") + " comes back online.", thread.id);
+							} catch (e) {
+								console.log(e);
+								api.sendMessage("Usage: !tell <user>:<msg>", thread.id);
+							}
 							break;
 						case "roulette":
 							var rounds = 6;
