@@ -500,13 +500,14 @@ login({
 											game[thread.id]["spyfall_status"] = 2;
 											var players = game[thread.id]["spyfall_players"];
 											var spy_index = ~~(Math.random() * players.length);
+											var first_index = ~~(Math.random() * players.length);
 											var new_players = { };
 											var location_index = ~~(Math.random() * locations.length);
 											(function next(i) {
 												if (i == players.length) {
 													console.log(new_players);
 													game[thread.id]["spyfall_directory"] = new_players;
-													api.sendMessage("All roles have been assigned. You can start asking questions!", thread.id);
+													api.sendMessage("All roles have been assigned. You can start asking questions!\n" + getUserData(players[first_index], "name") + " is first.", thread.id);
 												} else {
 													if (i == spy_index) {
 														new_players[players[i]] = {

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<% include ../partials/head %>
+		<title>Spyfall - MikalBot</title>
+	</head>
+	<body>
+		<header>
+			<% include ../partials/navbar %>
+		</header>
+		<div class="container">
+			<div class="page-header">
+				<h1>Spyfall</h1>
+			</div>
+			<p>Spyfall is a mafia-like game that can be played in a Facebook chat. In this game, a spy, who must guess the location of the other players (all of the other players share the same location). The goal of the other players is to reveal the spy. Since the identity of the spy is unknown, players must ask each other a series of questions to reveal information; the challenge is to reveal enough information to clear oneself while at the same time not revealing too much to the spy.</p>
+			<p>At any time, the spy may guess the location. If he guesses correctly, the game is over, and the spy wins. Otherwise, the identity of the spy will have been revealed, and the spy loses. The other players may also nominate other players whom they suspect of being the spy. If any single player is nominated by half of the non-spy players, that player will reveal whether he is the spy or not. If he is the spy, he has an opportunity to guess the location before he loses; if he guesses correctly, the game will result in a tie. If he is not the spy, the spy will have an opportunity to guess the location; if he guessse correctly, he wins.</p>
+
+			<div class="page-header">
+				<h2>Commands</h2>
+			</div>
+			<p>Any command that has to do with Spyfall begins with <code>!spyfall</code>. There can only be one game at a time per group chat, and it must be initialized before it can start.</p>
+			<p>The first step is to invite players using <code>!spyfall query</code> and wait for people to join. This way, not everyone in the group chat has to play.</p>
+			<p>At any time, anyone can use <code>!spyfall players</code> to get a list of the current players.</p>
+			<p>When everyone is ready, anyone can start the game with <code>!spyfall start</code>; at that time, roles will be assigned to every player through private message.</p>
+			<p>Begin asking questions; this part of the game is not monitored by the bot.</p>
+			<p>When the game is over, run <code>!spyfall end</code> to end the game and clear the database.</p>
+
+			<div class="page-header">
+				<h3>Credits</h3>
+			</div>
+			<p>This is just a Facebook chat implementation of another game. Check out the original game <a href="http://spyfall.meteor.com/">here</a>.</p>
+		</div>
+		<footer>
+			<% include ../partials/footer %>
+		</footer>
+	</body>
+</html>
