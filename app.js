@@ -53,7 +53,9 @@ app.get("/about", function(req, res) {
 	res.render("pages/about");
 });
 app.get("/spyfall", function(req, res) {
-	res.render("pages/spyfall", { locations: locations });
+	res.render("pages/spyfall", { locations: locations.map(function(obj) {
+		return obj["name"].split(".")[1];
+	}) });
 });
 app.get("/stats/:thread", function(req, res) {
 	if (!("thread" in req.params)) {

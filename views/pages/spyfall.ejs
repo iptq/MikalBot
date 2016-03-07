@@ -32,7 +32,7 @@
 				<tbody>
 					<% for(var i=0; i<locations.length; i++) { %>
 						<% if (i%3 == 0) { %><tr><% } %>
-						<td><%= locations[i].name.split(".")[1] %></td>
+						<td><%= locations[i] %></td>
 						<% if (i%3 == 2) { %></tr><% } %>
 					<% } %>
 				</tbody>
