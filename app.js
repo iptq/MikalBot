@@ -496,6 +496,7 @@ login({
 							} catch (e) {
 								api.sendMessage("Usage: !spyfall <command> <arguments> (Error: " + e.toString() + ")", thread.id);
 							}
+							break;
 						case "help":
 							// api.sendMessage(domain + "/about#help", thread.id);
 							// break;
