@@ -10,6 +10,7 @@ var async = require("async");
 var request = require("request");
 var webshot = require("webshot");
 
+var locations = require("./locations");
 var db = low("database.json", { storage: storage });
 
 var app = express();
@@ -24,6 +25,12 @@ var token = function(length) {
 		token += chars.substring(R, R+1);
 	}
 	return token;
+};
+
+if (!Array.prototype.last){
+    Array.prototype.last = function(){
+        return this[this.length - 1];
+    };
 };
 
 var secret = token();
@@ -486,11 +493,41 @@ login({
 										}
 										break;
 									case "start":
-										var has_game = (thread.id in game) && ("spyfall_status" in game[thread.id]) && game[thread.id]["spyfall_status"] == true;
-										if (has_game) {
+										var has_game = (thread.id in game) && ("spyfall_status" in game[thread.id]);
+										if (has_game && game[thread.id]["spyfall_status"] != 1) {
 											api.sendMessage("There's already a game started.", thread.id);
 										} else {
-											game[thread.id]["spyfall_status"] = 1;
+											game[thread.id]["spyfall_status"] = 2;
+											var players = game[thread.id]["spyfall_players"];
+											var spy_index = ~~(Math.random() * players.length);
+											var new_players = { };
+											var location_index = ~~(Math.random() * locations.length);
+											(function next(i) {
+												if (i == players.length) {
+													console.log(new_players);
+													game[thread.id]["spyfall_directory"] = new_players;
+													api.sendMessage("All roles have been assigned. You can start asking questions!", thread.id);
+												} else {
+													if (i == spy_index) {
+														new_players[players[i]] = {
+															spy: true,
+														};
+														api.sendMessage("You are the spy!", players[i], function() {
+															next(i + 1);
+														});
+													} else {
+														var role_index = ~~(Math.random() * locations[location_index]["roles"].length);
+														new_players[players[i]] = {
+															spy: false,
+															location: locations[location_index]["name"].split(".").last(),
+															role: locations[location_index]["roles"][role_index].split(".").last()
+														};
+														api.sendMessage("You aren't the spy!\nRole: ", players[i], function() {
+															next(i + 1);
+														});
+													}
+												}
+											})(0);
 										}
 										break;
 									default:
