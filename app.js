@@ -73,8 +73,8 @@ db._.mixin({
 try {
 	fs.statSync("data.json");
 	var data = jsonfile.readFileSync("data.json");
-	activity = data["activity"];
-	game = data["game"];
+	activity = data["activity"] || {};
+	game = data["game"] || {};
 	console.log("Reloaded saved data.");
 } catch (e) { }
 
