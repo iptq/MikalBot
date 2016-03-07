@@ -508,7 +508,7 @@ login({
 							// break;
 							api.sendMessage("facebook blocked me from sending links.", thread.id);
 						default:
-							api.sendMessage("visit mikalbot-failedxyz . c9users . io to see commands", thread.id);
+							api.sendMessage("visit bot(DOT)michaelz(DOT)xyz to see commands", thread.id);
 							break;
 					}
 				}
