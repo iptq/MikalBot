@@ -535,6 +535,7 @@ login({
 										delete game[thread.id]["spyfall_status"];
 										delete game[thread.id]["spyfall_directory"];
 										api.sendMessage("Game over. Start a new one with !spyfall query.", thread.id);
+										break;
 									default:
 										throw "Unknown command.";
 										break;
