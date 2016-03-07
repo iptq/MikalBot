@@ -377,9 +377,11 @@ login({
 							break;
 						case "leaderboard":
 						case "stats":
+							api.sendMessage("current leaderboard: " + domain + "/stats/" + thread.id, thread.id);
+							break;
+							/*
 							var url = domain + "/stats/" + thread.id + "?images=yes";
 							console.log("capturing " + url + "...");
-							// api.sendMessage("current leaderboard: " + domain + "/stats/" + thread.id, thread.id);
 							webshot(url, "tmp/" + thread.id + ".png", {
 								shotSize: { "height": "all" },
 								// takeShotOnCallback: true
@@ -392,6 +394,7 @@ login({
 								api.sendMessage(obj, thread.id);
 							});
 							break;
+							*/
 						case "roll":
 							var max = 100;
 							try {
