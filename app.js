@@ -457,6 +457,7 @@ login({
 												game[thread.id] = { };
 											}
 											game[thread.id]["spyfall_players"] = [];
+											game[thread.id]["spyfall_status"] = 1;
 											api.sendMessage("Who wants to play Spyfall? Reply with !spyfall join.", thread.id);
 										}
 										break;
@@ -489,7 +490,7 @@ login({
 										if (has_game) {
 											api.sendMessage("There's already a game started.", thread.id);
 										} else {
-
+											game[thread.id]["spyfall_status"] = 1;
 										}
 										break;
 									default:
