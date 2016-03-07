@@ -453,6 +453,9 @@ login({
 										if (has_game && game[thread.id]["spyfall_status"] == 2) {
 											api.sendMessage("There's already a game started.", thread.id);
 										} else {
+											if (!(thread.id in game)) {
+												game[thread.id] = { };
+											}
 											game[thread.id]["spyfall_players"] = [];
 											api.sendMessage("Who wants to play Spyfall? Reply with !spyfall join.", thread.id);
 										}
