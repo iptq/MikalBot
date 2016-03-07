@@ -62,7 +62,7 @@ app.get("/stats/:thread", function(req, res) {
 });
 
 var activity = {};
-var roulette = {};
+var game = {};
 
 db._.mixin({
 	randomize: function(array) {
@@ -74,7 +74,7 @@ try {
 	fs.statSync("data.json");
 	var data = jsonfile.readFileSync("data.json");
 	activity = data["activity"];
-	roulette = data["roulette"];
+	game = data["roulette"];
 	console.log("Reloaded saved data.");
 } catch (e) { }
 
@@ -206,11 +206,11 @@ login({
 				}
 			}
 		}
-		for(thread in roulette) {
+		for(thread in game) {
 			var remain = [];
-			if ("kicked" in roulette[thread]) {
-				for(var i=0; i<roulette[thread]["kicked"].length; i++) {
-					user = roulette[thread]["kicked"][i];
+			if ("kicked" in game[thread]) {
+				for(var i=0; i<game[thread]["kicked"].length; i++) {
+					user = game[thread]["kicked"][i];
 					// console.log(user["until"] + " " + ~~(moment().format("X")));
 					if (user["until"] < ~~(moment().format("X"))) {
 						api.addUserToGroup(user["id"], thread);
@@ -219,12 +219,12 @@ login({
 					}
 				}
 			}
-			roulette[thread]["kicked"] = []; // remain;
+			game[thread]["kicked"] = []; // remain;
 		}
-		console.log(roulette);
+		console.log(game);
 		var savedata = {
 			"activity": activity,
-			"roulette": roulette,
+			"game": game,
 		};
 		jsonfile.writeFileSync("data.json", savedata);
 		var now = new Date();
@@ -411,39 +411,91 @@ login({
 						case "roulette":
 							var rounds = 6;
 							try {
-								if (thread.id in roulette && "rounds" in roulette[thread.id]) {
-									rounds = roulette[thread.id]["rounds"];
+								if (thread.id in game && "rounds" in game[thread.id]) {
+									rounds = game[thread.id]["rounds"];
 								} else {
-									roulette[thread.id] = { };
+									game[thread.id] = { };
 								}
 							} catch (e) { }
 							var chance = (rounds > 0) ? 1 - (1 / rounds) : 1;
 							var dead = Math.random() > chance;
 							rounds -= 1;
-							roulette[thread.id]["rounds"] = rounds;
+							game[thread.id]["rounds"] = rounds;
 							if (dead) {
-								roulette[thread.id]["rounds"] = 6;
+								game[thread.id]["rounds"] = 6;
 								api.sendMessage("@" + sender.name + ": Bam! You're dead!", thread.id, function() {
-									if (!("kicked" in roulette[thread.id])) {
-										roulette[thread.id]["kicked"] = [];
+									if (!("kicked" in game[thread.id])) {
+										game[thread.id]["kicked"] = [];
 									}
-									roulette[thread.id]["kicked"] = []; /*.push({
+									game[thread.id]["kicked"] = []; /*.push({
 										id: sender.id,
 										until: ~~(moment().format("X") + 1)
 									});*/
-									console.log(roulette[thread.id]);
+									console.log(game[thread.id]);
 									// api.sendMessage("kicking " + sender.name, thread.id);
 									api.removeUserFromGroup(sender.id, thread.id);
 								});
 							} else {
 								if (rounds == 1) {
-									roulette[thread.id]["rounds"] = 6;
+									game[thread.id]["rounds"] = 6;
 									api.sendMessage(sender.name + " wins!", thread.id);
 								} else {
 									api.sendMessage("@" + sender.name + ": Blank. There's " + rounds + " round" + (rounds > 1 ? "s" : "") + " left...", thread.id);
 								}
 							}
 							break;
+						case "spyfall":
+							try {
+								var command = message.split("!spyfall ")[1].split(" ")[0].toLowerCase();
+								switch(command) {
+									case "query":
+										var has_game = (thread.id in game) && ("spyfall_status" in game[thread.id]);
+										if (has_game && game[thread.id]["spyfall_status"] == 2) {
+											api.sendMessage("There's already a game started.", thread.id);
+										} else {
+											game[thread.id]["spyfall_players"] = [];
+											api.sendMessage("Who wants to play Spyfall? Reply with !spyfall join.", thread.id);
+										}
+										break;
+									case "join":
+										var has_game = (thread.id in game) && ("spyfall_status" in game[thread.id]);
+										if (!has_game || game[thread.id]["spyfall_status"] == 0) {
+											api.sendMessage("There's no ongoing game right now. Reply with !spyfall query to find players.", thread.id);
+										} else if (game[thread.id]["spyfall_status"] == 2) {
+											api.sendMessage("There's already a game started.", thread.id);
+										} else {
+											if (game[thread.id]["spyfall_players"].indexOf(sender.id) == -1) {
+												game[thread.id]["spyfall_players"].push(sender.id);
+											}
+											api.sendMessage("@" + sender.name + ": You're all set!", thread.id);
+										}
+										break;
+									case "players":
+										var has_game = (thread.id in game) && ("spyfall_status" in game[thread.id]);
+										if (!has_game || game[thread.id]["spyfall_status"] == 0) {
+											api.sendMessage("There's no ongoing game right now. Reply with !spyfall query to start one.", thread.id);
+										} else {
+											var players = game[thread.id]["spyfall_players"].map(function(currentValue, index, array) {
+												return getUserData(currentValue, "firstName");
+											});
+											api.sendMessage("Current players: " + players.join(", "), thread.id);
+										}
+										break;
+									case "start":
+										var has_game = (thread.id in game) && ("spyfall_status" in game[thread.id]) && game[thread.id]["spyfall_status"] == true;
+										if (has_game) {
+											api.sendMessage("There's already a game started.", thread.id);
+										} else {
+
+										}
+										break;
+									default:
+										throw "Unknown command.";
+										break;
+								}
+							} catch (e) {
+								api.sendMessage("Usage: !spyfall <command> <arguments> (Error: " + e.toString() + ")", thread.id);
+							}
 						case "help":
 							// api.sendMessage(domain + "/about#help", thread.id);
 							// break;
