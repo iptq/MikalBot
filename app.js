@@ -553,12 +553,20 @@ login({
 							}
 							break;
 						case "help":
-							// api.sendMessage(domain + "/about#help", thread.id);
-							// break;
+							try {
+								api.sendMessage(domain + "/about#help", thread.id);
+							} catch (e) {
+								api.sendMessage("visit bot(DOT)michaelz(DOT)xyz to see commands", thread.id);
+							}
+							break;
 						case "rules":
-							// api.sendMessage(domain + "/about#rules", thread.id);
-							// break;
-							api.sendMessage("facebook blocked me from sending links.", thread.id);
+							try {
+								api.sendMessage(domain + "/about#rules", thread.id);
+							} catch (e) {
+								api.sendMessage("visit bot(DOT)michaelz(DOT)xyz to see commands", thread.id);
+							}
+							break;
+							// api.sendMessage("facebook blocked me from sending links.", thread.id);
 						default:
 							api.sendMessage("visit bot(DOT)michaelz(DOT)xyz to see commands", thread.id);
 							break;
