@@ -52,6 +52,9 @@ app.get("/", function(req, res) {
 app.get("/about", function(req, res) {
 	res.render("pages/about");
 });
+app.get("/spyfall", function(req, res) {
+	res.render("pages/spyfall");
+});
 app.get("/stats/:thread", function(req, res) {
 	if (!("thread" in req.params)) {
 		return res.redirect("/");
