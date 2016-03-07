@@ -26,6 +26,19 @@
 			<p>When the game is over, run <code>!spyfall end</code> to end the game and clear the database.</p>
 
 			<div class="page-header">
+				<h2>Locations</h2>
+			</div>
+			<table class="table">
+				<tbody>
+					<% for(var i=0; i<locations.length; i++) { %>
+						<% if (i%3 == 0) { %><tr><% } %>
+						<td><%= locations[i].name %></td>
+						<% if (i%3 == 2) { %></tr><% } %>
+					<% } %>
+				</tbody>
+			</table>
+
+			<div class="page-header">
 				<h3>Credits</h3>
 			</div>
 			<p>This is just a Facebook chat implementation of another game. Check out the original game <a href="http://spyfall.meteor.com/">here</a>.</p>
