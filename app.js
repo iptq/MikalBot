@@ -463,7 +463,7 @@ login({
 							try {
 								var command = message.split("!spyfall ")[1].split(" ")[0].toLowerCase();
 								switch(command) {
-									case "query":
+									case "new":
 										var has_game = (thread.id in game) && ("spyfall_status" in game[thread.id]);
 										if (has_game && game[thread.id]["spyfall_status"] == 2) {
 											api.sendMessage("There's already a game started.", thread.id);
@@ -479,7 +479,7 @@ login({
 									case "join":
 										var has_game = (thread.id in game) && ("spyfall_status" in game[thread.id]);
 										if (!has_game || game[thread.id]["spyfall_status"] == 0) {
-											api.sendMessage("There's no ongoing game right now. Reply with !spyfall query to find players.", thread.id);
+											api.sendMessage("There's no ongoing game right now. Reply with !spyfall new to find players.", thread.id);
 										} else if (game[thread.id]["spyfall_status"] == 2) {
 											api.sendMessage("There's already a game started.", thread.id);
 										} else {
@@ -492,7 +492,7 @@ login({
 									case "players":
 										var has_game = (thread.id in game) && ("spyfall_status" in game[thread.id]);
 										if (!has_game || game[thread.id]["spyfall_status"] == 0) {
-											api.sendMessage("There's no ongoing game right now. Reply with !spyfall query to start one.", thread.id);
+											api.sendMessage("There's no ongoing game right now. Reply with !spyfall new to start one.", thread.id);
 										} else {
 											var players = game[thread.id]["spyfall_players"].map(function(currentValue, index, array) {
 												return getUserData(currentValue, "firstName");
@@ -545,7 +545,7 @@ login({
 										delete game[thread.id]["spyfall_players"];
 										delete game[thread.id]["spyfall_status"];
 										delete game[thread.id]["spyfall_directory"];
-										api.sendMessage("Game over. Start a new one with !spyfall query.", thread.id);
+										api.sendMessage("Game over. Start a new one with !spyfall new.", thread.id);
 										break;
 									default:
 										throw "Unknown command.";
