@@ -9,6 +9,7 @@ var moment = require("moment");
 var async = require("async");
 var request = require("request");
 var webshot = require("webshot");
+var wolfram = require("wolfram-alpha").createClient(process.env.WOLFRAM_ALPHA_APPID);
 
 var locations = require("./locations");
 var db = low("database.json", { storage: storage });
@@ -28,9 +29,9 @@ var token = function(length) {
 };
 
 if (!Array.prototype.last){
-    Array.prototype.last = function(){
-        return this[this.length - 1];
-    };
+	Array.prototype.last = function(){
+		return this[this.length - 1];
+	};
 };
 
 var secret = token();
@@ -459,6 +460,26 @@ login({
 								}
 							}
 							break;
+						case "ask":
+							try {
+								var query = message.split("!ask ")[1];
+								wolfram.query(query, function(err, result) {
+									if (err) {
+										console.err(err);
+									} else {
+										for(var i=0; i<result.length; i++) {
+											if (result[i]["primary"] === true) {
+												var data = JSON.stringify(result[i]);
+												api.sendMessage("@" + sender.name + ": " + data, thread.id);
+												break;
+											}
+										}
+									}
+								});
+							} catch (e) {
+								api.sendMessage("@" + sender.name + ": What?", thread.id);
+							}
+							break;
 						case "spyfall":
 							try {
 								var command = message.split("!spyfall ")[1].split(" ")[0].toLowerCase();
@@ -559,19 +580,19 @@ login({
 							try {
 								api.sendMessage(domain + "/about#help", thread.id);
 							} catch (e) {
-								api.sendMessage("visit bot(DOT)michaelz(DOT)xyz to see commands", thread.id);
+								api.sendMessage("visit " + domain + " to see commands", thread.id);
 							}
 							break;
 						case "rules":
 							try {
 								api.sendMessage(domain + "/about#rules", thread.id);
 							} catch (e) {
-								api.sendMessage("visit bot(DOT)michaelz(DOT)xyz to see commands", thread.id);
+								api.sendMessage("visit " + domain + " to see commands", thread.id);
 							}
 							break;
 							// api.sendMessage("facebook blocked me from sending links.", thread.id);
 						default:
-							api.sendMessage("visit bot(DOT)michaelz(DOT)xyz to see commands", thread.id);
+							api.sendMessage("visit " + domain + " to see commands", thread.id);
 							break;
 					}
 				}
