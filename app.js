@@ -477,7 +477,7 @@ login({
 											if (result[i]["primary"] === true) {
 												var subpod = result[i]["subpods"][0];
 												var obj = {
-													"message": "@" + sender.name + ": " + subpod["text"]
+													"body": "@" + sender.name + ": " + subpod["text"]
 												};
 												if ("image" in subpod) {
 													var filename = "tmp/" + token() + ".gif";
