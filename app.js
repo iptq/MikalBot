@@ -480,7 +480,7 @@ login({
 													"message": "@" + sender.name + ": " + subpod["text"]
 												};
 												if ("image" in subpod) {
-													var filename = "tmp/" + token();
+													var filename = "tmp/" + token() + ".gif";
 													download(subpod["image"], filename, function() {
 														obj["attachment"] = fs.createReadStream(filename);
 														api.sendMessage(obj, thread.id);
