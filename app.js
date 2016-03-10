@@ -492,7 +492,6 @@ login({
 										} else {
 											throw "";
 										}
-										break;
 									}
 								});
 							} catch (e) {
