@@ -506,6 +506,9 @@ login({
 							try {
 								var command = message.split("!spyfall ")[1].split(" ")[0].toLowerCase();
 								switch(command) {
+									case "rules": case "locations": case "instructions":
+										api.sendMessage("Instructions: " + domain + "/spyfall", thread.id);
+										break;
 									case "new":
 										var has_game = (thread.id in game) && ("spyfall_status" in game[thread.id]);
 										if (has_game && game[thread.id]["spyfall_status"] == 2) {
