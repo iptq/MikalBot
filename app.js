@@ -34,6 +34,12 @@ if (!Array.prototype.last){
 	};
 };
 
+var download = function(uri, filename, callback){
+	request.head(uri, function(err, res, body) {
+		request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+	});
+};
+
 var secret = token();
 try {
 	secret = fs.readFileSync(".secret", { encoding: "utf-8" });
@@ -469,8 +475,19 @@ login({
 									} else {
 										for(var i=0; i<result.length; i++) {
 											if (result[i]["primary"] === true) {
-												var data = JSON.stringify(result[i]);
-												api.sendMessage("@" + sender.name + ": " + data, thread.id);
+												var subpod = result[i]["subpods"][0];
+												var obj = {
+													"message": "@" + sender.name + ": " + subpod["text"]
+												};
+												if ("image" in subpod) {
+													var filename = "tmp/" + token();
+													download(subpod["image"], filename, function() {
+														obj["attachment"] = fs.createReadStream(filename);
+														api.sendMessage(obj, thread.id);
+													});
+												} else {
+													api.sendMessage(obj, thread.id);
+												}
 												break;
 											}
 										}
