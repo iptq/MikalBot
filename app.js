@@ -470,28 +470,32 @@ login({
 							try {
 								var query = message.split("!ask ")[1];
 								wolfram.query(query, function(err, result) {
-									if (err) {
-										console.err(err);
-									} else {
-										if (result.length == 0) throw "";
-										var index = 1;
-										for(var i=0; i<result.length; i++) {
-											if (result[i]["primary"] === true) {
-												index = i;
-												break;
+									try {
+										if (err) {
+											console.err(err);
+										} else {
+											if (result.length == 0) throw "";
+											var index = 1;
+											for(var i=0; i<result.length; i++) {
+												if (result[i]["primary"] === true) {
+													index = i;
+													break;
+												}
+											}
+											var subpod = result[index]["subpods"][0];
+											var obj = {};
+											if ("image" in subpod) {
+												var filename = "tmp/" + token() + ".gif";
+												download(subpod["image"], filename, function() {
+													obj["attachment"] = fs.createReadStream(filename);
+													api.sendMessage(obj, thread.id);
+												});
+											} else {
+												throw "";
 											}
 										}
-										var subpod = result[index]["subpods"][0];
-										var obj = {};
-										if ("image" in subpod) {
-											var filename = "tmp/" + token() + ".gif";
-											download(subpod["image"], filename, function() {
-												obj["attachment"] = fs.createReadStream(filename);
-												api.sendMessage(obj, thread.id);
-											});
-										} else {
-											throw "";
-										}
+									} catch (e) {
+										api.sendMessage("@" + sender.name + ": What?", thread.id);
 									}
 								});
 							} catch (e) {
