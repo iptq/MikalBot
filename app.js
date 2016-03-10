@@ -476,6 +476,7 @@ login({
 										for(var i=0; i<result.length; i++) {
 											if (result[i]["primary"] === true) {
 												var subpod = result[i]["subpods"][0];
+												var obj = {};
 												if ("image" in subpod) {
 													var filename = "tmp/" + token() + ".gif";
 													download(subpod["image"], filename, function() {
