@@ -473,22 +473,26 @@ login({
 									if (err) {
 										console.err(err);
 									} else {
+										if (result.length == 0) throw "";
+										var index = 1;
 										for(var i=0; i<result.length; i++) {
 											if (result[i]["primary"] === true) {
-												var subpod = result[i]["subpods"][0];
-												var obj = {};
-												if ("image" in subpod) {
-													var filename = "tmp/" + token() + ".gif";
-													download(subpod["image"], filename, function() {
-														obj["attachment"] = fs.createReadStream(filename);
-														api.sendMessage(obj, thread.id);
-													});
-												} else {
-													api.sendMessage("@" + sender.name + ": uwotm8", thread.id);
-												}
+												index = i;
 												break;
 											}
 										}
+										var subpod = result[i]["subpods"][0];
+										var obj = {};
+										if ("image" in subpod) {
+											var filename = "tmp/" + token() + ".gif";
+											download(subpod["image"], filename, function() {
+												obj["attachment"] = fs.createReadStream(filename);
+												api.sendMessage(obj, thread.id);
+											});
+										} else {
+											throw "";
+										}
+										break;
 									}
 								});
 							} catch (e) {
