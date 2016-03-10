@@ -476,9 +476,6 @@ login({
 										for(var i=0; i<result.length; i++) {
 											if (result[i]["primary"] === true) {
 												var subpod = result[i]["subpods"][0];
-												var obj = {
-													"body": "@" + sender.name + ": " + subpod["text"]
-												};
 												if ("image" in subpod) {
 													var filename = "tmp/" + token() + ".gif";
 													download(subpod["image"], filename, function() {
@@ -486,7 +483,7 @@ login({
 														api.sendMessage(obj, thread.id);
 													});
 												} else {
-													api.sendMessage(obj, thread.id);
+													api.sendMessage("@" + sender.name + ": uwotm8", thread.id);
 												}
 												break;
 											}
