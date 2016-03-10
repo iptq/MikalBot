@@ -467,6 +467,10 @@ login({
 							}
 							break;
 						case "ask":
+							if (sender.id == "100000476141629") {
+								api.sendMessage("no devin pls", thread.id);
+								break;
+							}
 							try {
 								var query = message.split("!ask ")[1];
 								wolfram.query(query, function(err, result) {
