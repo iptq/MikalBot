@@ -395,9 +395,8 @@ login({
 							break;
 						case "leaderboard":
 						case "stats":
-							api.sendMessage("current leaderboard: " + domain + "/stats/" + thread.id, thread.id);
-							break;
-							/*
+							/* api.sendMessage("current leaderboard: " + domain + "/stats/" + thread.id, thread.id);
+							break; */
 							var url = domain + "/stats/" + thread.id + "?images=yes";
 							console.log("capturing " + url + "...");
 							webshot(url, "tmp/" + thread.id + ".png", {
@@ -412,7 +411,6 @@ login({
 								api.sendMessage(obj, thread.id);
 							});
 							break;
-							*/
 						case "roll":
 							var max = 100;
 							try {
