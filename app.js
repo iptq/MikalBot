@@ -51,7 +51,7 @@ app.set("view engine", "ejs");
 app.use(session({ secret: secret }));
 app.use(express.static("public"));
 
-var get_full_url(req) {
+var get_full_url = function(req) {
 	return req.protocol + '://' + req.get('host') + req.originalUrl
 };
 
