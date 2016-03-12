@@ -51,25 +51,36 @@ app.set("view engine", "ejs");
 app.use(session({ secret: secret }));
 app.use(express.static("public"));
 
+var get_full_url(req) {
+	return req.protocol + '://' + req.get('host') + req.originalUrl
+};
+
 app.get("/", function(req, res) {
 	res.render("pages/index", {
-		N: Object.keys(activity).length
+		N: Object.keys(activity).length,
+		url: get_full_url(req)
 	});
 });
 app.get("/about", function(req, res) {
-	res.render("pages/about");
+	res.render("pages/about", {
+		url: get_full_url(req)
+	});
 });
 app.get("/spyfall", function(req, res) {
-	res.render("pages/spyfall", { locations: locations.map(function(obj) {
-		return obj["name"].split(".")[1];
-	}) });
+	res.render("pages/spyfall", {
+		url: get_full_url(req),
+		locations: locations.map(function(obj) {
+			return obj["name"].split(".")[1];
+		})
+	});
 });
 app.get("/stats/:thread", function(req, res) {
 	if (!("thread" in req.params)) {
 		return res.redirect("/");
 	} else {
 		var opt = {
-			"leaderboard": getLeaderboard(req.params["thread"])
+			"leaderboard": getLeaderboard(req.params["thread"]),
+			url: get_full_url(req)
 		};
 		if ("images" in req.query && req.query["images"] == "no") {
 			opt["images"] = "no";
