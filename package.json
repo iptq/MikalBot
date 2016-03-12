@@ -11,6 +11,7 @@
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "facebook-chat-api": "~1.0.6",
+    "googleapis": "^2.1.7",
     "jsonfile": "^2.2.3",
     "lowdb": "^0.12.2",
     "method-override": "^2.3.5",
