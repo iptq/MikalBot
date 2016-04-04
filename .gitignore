@@ -5,3 +5,4 @@ data.json
 database.json
 .secret
 .env
+config.js

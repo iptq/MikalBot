@@ -9,7 +9,7 @@ Thread.prototype.constructor = Thread;
 
 Thread.get_thread = async(function(tid) {
 	var info = common.db("threads").find({ tid: tid });
-	if (info && moment().isBefore(info["expires"])) {
+	if (info && moment().isBefore(moment(info["expires"], "X"))) {
 		return info;
 	} else {
 		info = await(Thread.get_thread_info(tid));
