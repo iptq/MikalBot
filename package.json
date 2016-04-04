@@ -1,25 +1,10 @@
 {
-  "scripts": {
-    "start": "node app"
-  },
   "dependencies": {
-    "async": "^1.5.2",
-    "bcrypt-nodejs": "0.0.3",
-    "body-parser": "^1.14.2",
-    "cookie-parser": "^1.4.1",
-    "ejs": "^2.4.1",
-    "express": "^4.13.4",
-    "express-session": "^1.13.0",
-    "facebook-chat-api": "~1.0.6",
-    "googleapis": "^2.1.7",
-    "jsonfile": "^2.2.3",
-    "lowdb": "^0.12.2",
-    "method-override": "^2.3.5",
-    "moment": "^2.11.2",
-    "morgan": "^1.6.1",
-    "passport-facebook": "^2.1.0",
-    "request": "^2.69.0",
-    "webshot": "^0.17.0",
-    "wolfram-alpha": "^0.3.0"
+    "asyncawait": "^1.0.3",
+    "deferred": "^0.7.5",
+    "dotenv": "^2.0.0",
+    "facebook-chat-api": "^1.0.8",
+    "lowdb": "^0.12.5",
+    "moment": "^2.12.0"
   }
 }
