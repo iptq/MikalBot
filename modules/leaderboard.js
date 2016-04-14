@@ -17,6 +17,18 @@ var percent_to_next_level = function(xp) {
 	return progress * 1.0 / total;
 };
 
+Leaderboard.get_leaderboard = function(tid) {
+	var entries = common.db("stats").filter({ tid: tid });
+	entries.sort(function(a, b) { return b.experience - a.experience });
+	return entries;
+};
+
+Leaderboard.get_rank = function(uid, tid) {
+	var scores = Leaderboard.get_leaderboard(tid);
+	var entry = common.db("stats").find({ uid: uid, tid: tid });
+	return scores.indexOf(entry) + 1;
+};
+
 Leaderboard.onMessageReceived = function(evt) {
 	var entry = common.db("stats").find({ uid: evt.senderID, tid: evt.threadID })
 	if (entry) {
@@ -59,11 +71,12 @@ Leaderboard.levelHook = async(function(evt, args) {
 	var entry = common.db("stats").find({ uid: search, tid: evt.threadID }) || { activity: 10, experience: 0 };
 	var user_info = await(User.get_user(search));
 	var experience = ~~(entry["experience"] * 100) / 100;
+	var rank = Leaderboard.get_rank(search, evt.threadID);
 	var percent = ~~(percent_to_next_level(experience) * 10000) / 100;
 	if (evt.senderID == search) {
-		common.api.sendMessage(user_info["firstName"] + ": You're level " + experience_to_level(experience) + " (" + experience + "xp, " + percent + "%)", evt.threadID);
+		common.api.sendMessage(user_info["firstName"] + ": You're rank #" + rank + " at level " + experience_to_level(experience) + " (" + experience + "xp, " + percent + "%)", evt.threadID);
 	} else {
-		common.api.sendMessage(user_info["firstName"] + " is level " + experience_to_level(experience) + " (" + experience + "xp, " + percent + "%)", evt.threadID);
+		common.api.sendMessage(user_info["firstName"] + " is rank #" + rank + " at level " + experience_to_level(experience) + " (" + experience + "xp, " + percent + "%)", evt.threadID);
 	}
 });
 

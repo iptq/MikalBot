@@ -8,11 +8,11 @@ var User = function() { }
 User.prototype.constructor = User;
 
 User.get_user = async(function(uid) {
-	var info = common.db("users").find({ uid: uid });
+	var info = common.db("users").find({ uid: uid }) || { };
 	if (info && moment().isBefore(moment(info["expires"], "X"))) {
 		return info;
 	} else {
-		info = await(User.get_user_info(uid))[uid];
+		info_2 = await(User.get_user_info(uid))[uid];
 		info["uid"] = uid;
 		info["expires"] = ~~(moment().add(8, "hours").format("X"));
 		info["name_lower"] = info["name"].toLowerCase();

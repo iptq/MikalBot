@@ -33,12 +33,15 @@ common.init(function() {
 							module[module["metadata"]["events"]["onMessageReceived"]](evt);
 						}
 					}
+					// commands
 					if (evt.body.startsWith(config.trigger)) {
 						var command = evt.body.substring(config.trigger.length).split(" ")[0].toLowerCase();
 						var args = parse(evt.body.substring(config.trigger.length));
 						for(var cmd in common.commands) {
-							console.log("cmd: " + cmd + ", msg: " + evt.body);
-							await(common.commands[cmd](evt, args));
+							if (cmd == command) {
+								console.log("cmd: " + cmd + ", msg: " + evt.body);
+								await(common.commands[cmd](evt, args));
+							}
 						}
 					}
 					break;

@@ -35,6 +35,7 @@ var load_modules = function() {
 			console.error("Module " + file + " not loaded: " + e);
 			return false;
 		}
+		console.log("Loaded module: " + file);
 		return modules[file.replace(".js", "")] = module;
 	});
 	exports.modules = modules;
@@ -50,7 +51,9 @@ exports.init = function(callback) {
 		forceLogin: true
 	}, function(err, api) {
 		if (err) return console.error(err);
-		api.setOptions({ listenEvents: true });
+		api.setOptions({
+			listenEvents: true
+		});
 		exports.api = api;
 		callback();
 	});
