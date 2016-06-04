@@ -9,13 +9,18 @@ Roulette.rouletteHook = async(function(evt, args) {
 	var senderName = await(User.get_user(evt.senderID))["name"];
 	var game_data = common.db("roulette").find({ "tid": evt.threadID });
 	var found = game_data !== undefined;
-	if (!found) game_data = { "tid": evt.threadID, "rounds": 6, "wins": {} };
+	if (!found) game_data = { "tid": evt.threadID, "rounds": 6, "wins": {}, "deaths": {} };
 	var chance = (game_data["rounds"] > 0) ? 1 - (1 / game_data["rounds"]) : 1;
 	var dead = Math.random() > chance;
-	var update = { "rounds": game_data["rounds"] - 1 };
+	var update = { "rounds": game_data["rounds"] - 1, "wins": game_data["wins"], "deaths": game_data["deaths"] };
 	if (dead) {
 		update["rounds"] = 6;
-		common.api.sendMessage(senderName + ": Bam! You're dead!", evt.threadID, function() {
+		if (!(evt.threadID in game_data["deaths"])) {
+			update["deaths"][evt.threadID] = 1;
+		} else {
+			update["deaths"][evt.threadID] = game_data["deaths"][evt.threadID] + 1;
+		}
+		common.api.sendMessage(senderName + ": Bam! You're dead! (death count: " + update["deaths"][evt.threadID] + ")", evt.threadID, function() {
 			setTimeout(function() {
 				var game_data2 = common.db("roulette").find({ "tid": evt.threadID });
 				common.api.addUserToGroup(evt.senderID, evt.threadID);

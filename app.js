@@ -3,6 +3,7 @@ var common = require("./common");
 var config = require("./config");
 var moment = require("moment");
 var parse = require("shell-quote").parse;
+var promisify = require("deferred").promisify;
 var Thread = require("./thread");
 var User = require("./user");
 
@@ -19,7 +20,6 @@ common.init(function() {
 			}
 		}
 	}), 60000);
-	require("./modules/leaderboard").everyMinute(0);
 	common.api.listen(async(function(err, evt) {
 		try {
 			switch (evt.type) {

@@ -13,6 +13,9 @@ User.get_user = async(function(uid) {
 		return info;
 	} else {
 		info_2 = await(User.get_user_info(uid))[uid];
+		for (var prop in info_2) {
+			info[prop] = info_2[prop];
+		}
 		info["uid"] = uid;
 		info["expires"] = ~~(moment().add(8, "hours").format("X"));
 		info["name_lower"] = info["name"].toLowerCase();

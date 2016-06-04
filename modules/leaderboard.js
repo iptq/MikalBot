@@ -1,6 +1,7 @@
 var async = require("asyncawait/async"), await = require("asyncawait/await");
 var common = require("./../common");
 var User = require("./../user");
+var Thread = require("./../thread");
 
 var Leaderboard = function() { }
 
@@ -29,8 +30,25 @@ Leaderboard.get_rank = function(uid, tid) {
 	return scores.indexOf(entry) + 1;
 };
 
+Leaderboard.not_in_leaderboard = async(function(tid) {
+	var thread = await(Thread.get_thread(tid));
+	var users = thread["participantIDs"];
+	var leaderboard = Leaderboard.get_leaderboard(tid);
+	var in_leaderboard = [];
+	for(var i=0; i<leaderboard.length; i++) {
+		in_leaderboard.push(leaderboard[i]["uid"]);
+	}
+	var missing = [];
+	for(var i=0; i<users.length; i++) {
+		if (in_leaderboard.indexOf(users[i]) < 0) {
+			missing.push(await(User.get_user(users[i]))["name"]);
+		}
+	}
+	return missing;
+});
+
 Leaderboard.onMessageReceived = function(evt) {
-	var entry = common.db("stats").find({ uid: evt.senderID, tid: evt.threadID })
+	var entry = common.db("stats").find({ uid: evt.senderID, tid: evt.threadID });
 	if (entry) {
 		common.db("stats").chain()
 			.find({ uid: evt.senderID, tid: evt.threadID })
@@ -47,6 +65,19 @@ Leaderboard.onMessageReceived = function(evt) {
 };
 
 Leaderboard.everyMinute = async(function(time) {
+	var before = [], after = [];
+	var threads = common.db("threads").filter({});
+	for (var i=0; i<threads.length; i++) {
+		var users = common.db("stats").filter({ tid: threads[i]["tid"] }).sort(function(a, b) {
+			return a["experience"] - b["experience"];
+		});
+		var Q = [];
+		for(var j=0; j<users.length; j++) {
+			before.push({ uid: users[j]["uid"], tid: threads[i]["tid"], better_than: Q.slice(0) });
+			Q.push(users[j]["uid"]);
+		}
+	}
+	before = before.sort(function(a, b) { return (a["uid"] != b["uid"]) ? a["uid"] - b["uid"] : a["tid"] - b["tid"]; });
 	common.db("stats").filter({}).forEach(function(obj) {
 		var experience = obj["experience"] + 0.5 * obj["activity"];
 		if (experience_to_level(experience) > experience_to_level(obj["experience"])) {
@@ -58,6 +89,33 @@ Leaderboard.everyMinute = async(function(time) {
 			.assign({ activity: (obj["activity"] == 0) ? 0 : obj["activity"] - 1, experience: experience })
 			.value();
 	});
+	for (var i=0; i<threads.length; i++) {
+		var users = common.db("stats").filter({ tid: threads[i]["tid"] }).sort(function(a, b) {
+			return a["experience"] - b["experience"];
+		});
+		var Q = [];
+		for(var j=0; j<users.length; j++) {
+			after.push({ uid: users[j]["uid"], tid: threads[i]["tid"], better_than: Q.slice(0) });
+			Q.push(users[j]["uid"]);
+		}
+	}
+	after = after.sort(function(a, b) { return (a["uid"] != b["uid"]) ? a["uid"] - b["uid"] : a["tid"] - b["tid"]; });
+	var messages = {};
+	for(var i=0; i<before.length; i++) {
+		if (after[i]["better_than"].length > before[i]["better_than"].length) {
+			var beat = [];
+			for(var j=0; j<after[i]["better_than"].length; j++) {
+				if (before[i]["better_than"].indexOf(after[i]["better_than"][j]) < 0) {
+					beat.push(await(User.get_user(after[i]["better_than"][j]))["name"]);
+				}
+			}
+			if (!(before[i]["tid"] in messages)) messages[before[i]["tid"]] = [];
+			messages[before[i]["tid"]].push(await(User.get_user(before[i]["uid"]))["name"] + " beat " + beat.join(", ") + "!");
+		}
+	}
+	for(var thread in messages) {
+		common.api.sendMessage(messages[thread].join("\n"), thread);
+	}
 });
 
 Leaderboard.levelHook = async(function(evt, args) {
@@ -80,13 +138,47 @@ Leaderboard.levelHook = async(function(evt, args) {
 	}
 });
 
+Leaderboard.rankHook = async(function(evt, args) {
+	try {
+		if (args.length < 2) throw "";
+		var num = parseInt(args[1]);
+		var leaderboard = Leaderboard.get_leaderboard(evt.threadID);
+		if (num <= 0) {
+			return common.api.sendMessage("Let's keep the ranks positive, thanks.", evt.threadID);
+		} else if (num > leaderboard.length) {
+			return common.api.sendMessage("There aren't that many positions!", evt.threadID);
+		}
+		var entry = leaderboard[num - 1];
+		var user = await(User.get_user(entry["uid"]));
+		return common.api.sendMessage(user["name"] + " is in rank #" + num + " with " + (~~(entry["experience"] * 100) / 100) + "xp.", evt.threadID);
+	} catch (e) {
+		console.log(e);
+		common.api.sendMessage("Failed to find position.", evt.threadID);
+	}
+});
+
+Leaderboard.leaderboardHook = async(function(evt, args) {
+	var leaderboard = Leaderboard.get_leaderboard(evt.threadID);
+	var people = [];
+	for(var i=0; i<leaderboard.length; i++) {
+		var entry = leaderboard[i];
+		var user = await(User.get_user(entry["uid"]));
+		people.push("#" + (i + 1) + ": " + user["name"] + " (" + (~~(entry["experience"] * 100) / 100) + "xp" + (i < leaderboard.length - 1 ? ", +" + (~~((entry["experience"] - leaderboard[i + 1]["experience"]) * 100) / 100) + "xp" : "") + ")");
+	}
+	var message = people.join("\n") + "\n";
+	message += "Not in leaderboard: " + await(Leaderboard.not_in_leaderboard(evt.threadID)).join(", ");
+	common.api.sendMessage(message, evt.threadID);
+});
+
 Leaderboard.metadata = {
 	"events": {
 		"onMessageReceived": "onMessageReceived",
 		"everyMinute": "everyMinute"
 	},
 	"commands": {
-		"level": "levelHook"
+		"level": "levelHook",
+		"rank": "rankHook",
+		"leaderboard": "leaderboardHook"
 	}
 };
 

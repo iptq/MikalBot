@@ -6,3 +6,4 @@ database.json
 .secret
 .env
 config.js
+_olddata
