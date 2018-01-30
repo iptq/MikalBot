@@ -55,6 +55,10 @@ exports.init = function(callback) {
 			listenEvents: true
 		});
 		exports.api = api;
+		exports.sendMessage = function(msg, tID) {
+			console.log("[BOT]", msg);
+			api.sendMessage(msg, tID);
+		};
 		callback();
 	});
 }

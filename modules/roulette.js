@@ -20,7 +20,7 @@ Roulette.rouletteHook = async(function(evt, args) {
 		} else {
 			update["deaths"][evt.threadID] = game_data["deaths"][evt.threadID] + 1;
 		}
-		common.api.sendMessage(senderName + ": Bam! You're dead! (death count: " + update["deaths"][evt.threadID] + ")", evt.threadID, function() {
+		common.sendMessage(senderName + ": Bam! You're dead! (death count: " + update["deaths"][evt.threadID] + ")", evt.threadID, function() {
 			setTimeout(function() {
 				var game_data2 = common.db("roulette").find({ "tid": evt.threadID });
 				common.api.addUserToGroup(evt.senderID, evt.threadID);
@@ -35,9 +35,9 @@ Roulette.rouletteHook = async(function(evt, args) {
 			} else {
 				update["wins"][evt.threadID] = game_data["wins"][evt.threadID] + 1;
 			}
-			common.api.sendMessage(senderName + ": You win! (win count: " + update["wins"][evt.threadID] + ")", evt.threadID);
+			common.sendMessage(senderName + ": You win! (win count: " + update["wins"][evt.threadID] + ")", evt.threadID);
 		} else {
-			common.api.sendMessage(senderName + ": Blank. There's " + update["rounds"] + " round" + (update["rounds"] == 1 ? "" : "s") + " left.", evt.threadID);
+			common.sendMessage(senderName + ": Blank. There's " + update["rounds"] + " round" + (update["rounds"] == 1 ? "" : "s") + " left.", evt.threadID);
 		}
 	}
 	if (found) {

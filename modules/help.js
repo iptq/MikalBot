@@ -4,7 +4,7 @@ var common = require("./../common");
 var Help = function() { }
 
 Help.helpHook = async(function(evt, args) {
-	common.api.sendMessage("Hi. I'm a bot.", evt.threadID);
+	common.sendMessage("Hi. I'm a bot.", evt.threadID);
 });
 
 Help.metadata = {

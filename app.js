@@ -24,6 +24,7 @@ common.init(function() {
 		try {
 			switch (evt.type) {
 				case "message":
+					console.info("(" + await(Thread.get_thread(evt.threadID))["name"] + ")", await(User.get_user(evt.senderID))["name"] + ":", evt.body);
 					var user_info = await(User.get_user(evt.senderID));
 					var thread_info = await(Thread.get_thread(evt.threadID));
 					// onMessageReceived

@@ -82,7 +82,7 @@ Leaderboard.everyMinute = async(function(time) {
 		var experience = obj["experience"] + 0.5 * obj["activity"];
 		if (experience_to_level(experience) > experience_to_level(obj["experience"])) {
 			var user_info = await(User.get_user(obj["uid"]));
-			common.api.sendMessage(user_info["firstName"] + " ranked up to level " + experience_to_level(experience) + "!", obj["tid"]);
+			common.sendMessage(user_info["firstName"] + " ranked up to level " + experience_to_level(experience) + "!", obj["tid"]);
 		}
 		common.db("stats").chain()
 			.find({ uid: obj["uid"], tid: obj["tid"] })
@@ -114,7 +114,7 @@ Leaderboard.everyMinute = async(function(time) {
 		}
 	}
 	for(var thread in messages) {
-		common.api.sendMessage(messages[thread].join("\n"), thread);
+		common.sendMessage(messages[thread].join("\n"), thread);
 	}
 });
 
@@ -132,9 +132,9 @@ Leaderboard.levelHook = async(function(evt, args) {
 	var rank = Leaderboard.get_rank(search, evt.threadID);
 	var percent = ~~(percent_to_next_level(experience) * 10000) / 100;
 	if (evt.senderID == search) {
-		common.api.sendMessage(user_info["firstName"] + ": You're rank #" + rank + " at level " + experience_to_level(experience) + " (" + experience + "xp, " + percent + "%)", evt.threadID);
+		common.sendMessage(user_info["firstName"] + ": You're rank #" + rank + " at level " + experience_to_level(experience) + " (" + experience + "xp, " + percent + "%)", evt.threadID);
 	} else {
-		common.api.sendMessage(user_info["firstName"] + " is rank #" + rank + " at level " + experience_to_level(experience) + " (" + experience + "xp, " + percent + "%)", evt.threadID);
+		common.sendMessage(user_info["firstName"] + " is rank #" + rank + " at level " + experience_to_level(experience) + " (" + experience + "xp, " + percent + "%)", evt.threadID);
 	}
 });
 
@@ -144,16 +144,16 @@ Leaderboard.rankHook = async(function(evt, args) {
 		var num = parseInt(args[1]);
 		var leaderboard = Leaderboard.get_leaderboard(evt.threadID);
 		if (num <= 0) {
-			return common.api.sendMessage("Let's keep the ranks positive, thanks.", evt.threadID);
+			return common.sendMessage("Let's keep the ranks positive, thanks.", evt.threadID);
 		} else if (num > leaderboard.length) {
-			return common.api.sendMessage("There aren't that many positions!", evt.threadID);
+			return common.sendMessage("There aren't that many positions!", evt.threadID);
 		}
 		var entry = leaderboard[num - 1];
 		var user = await(User.get_user(entry["uid"]));
-		return common.api.sendMessage(user["name"] + " is in rank #" + num + " with " + (~~(entry["experience"] * 100) / 100) + "xp.", evt.threadID);
+		return common.sendMessage(user["name"] + " is in rank #" + num + " with " + (~~(entry["experience"] * 100) / 100) + "xp.", evt.threadID);
 	} catch (e) {
 		console.log(e);
-		common.api.sendMessage("Failed to find position.", evt.threadID);
+		common.sendMessage("Failed to find position.", evt.threadID);
 	}
 });
 
@@ -167,7 +167,7 @@ Leaderboard.leaderboardHook = async(function(evt, args) {
 	}
 	var message = people.join("\n") + "\n";
 	message += "Not in leaderboard: " + await(Leaderboard.not_in_leaderboard(evt.threadID)).join(", ");
-	common.api.sendMessage(message, evt.threadID);
+	common.sendMessage(message, evt.threadID);
 });
 
 Leaderboard.metadata = {
